@@ -239,10 +239,15 @@ namespace WinUtils {
 	private:
 		template<typename... Args>
 		void FormatAndLog(LogLevel level, string_view_t fmt, Args&&... args) const noexcept {
-			auto tup = std::tuple<std::decay_t<Args>...>(std::forward<Args>(args)...);
-			std::apply([this, level, fmt](auto&... vals) {
-				LogImpl(level, std::vformat(fmt, make_tformat_args(vals...)));
-				}, tup);
+			if constexpr (sizeof...(Args) == 0) {
+				LogImpl(level, fmt);
+			}
+			else {
+				auto tup = std::tuple<std::decay_t<Args>...>(std::forward<Args>(args)...);
+				std::apply([this, level, fmt](auto&... vals) {
+					LogImpl(level, std::vformat(fmt, make_tformat_args(vals...)));
+					}, tup);
+			}
 		}
 		void LogImpl(LogLevel level, string_view_t msg) const noexcept;
 		string_t m_apartment;

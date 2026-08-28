@@ -40,9 +40,10 @@ wstring ToUpper(wstring_view str) noexcept {
 	return res;
 }
 
-bool IsValidGBKChar(wchar_t ch) {
+bool IsValidChar(wchar_t ch) {
 	if (ch <= 0x1F || ch == 0x7F) {
 		if (ch != 0x09 && ch != 0x0A && ch != 0x0D) return false;
+		return true;
 	}
 	if (ch == L'\uFFFD') {
 		return false;
@@ -54,11 +55,11 @@ bool IsValidGBKChar(wchar_t ch) {
 	return isBasicLatin || isChineseSymbol || isChineseChar || isFullWidthChar;
 }
 
-std::wstring CleanInvalidGBKChars(const std::wstring& gbk_str) {
+std::wstring CleanInvalidChars(const std::wstring& gbk_str) {
 	std::wstring result = gbk_str;
 	auto valid_end = std::remove_if(
 		result.begin(), result.end(),
-		[](wchar_t ch) { return !IsValidGBKChar(ch); }
+		[](wchar_t ch) { return !IsValidChar(ch); }
 	);
 	result.erase(valid_end, result.end());
 	return result;
@@ -157,7 +158,7 @@ FreezeResult HFreezeApi::SetFreezeState(
 	logger.DLog(LogLevel::Info, std::format(L"Sending GET request: {}:{}{}?{}", DEFAULT_IP, m_port, path, params));
 
 	std::wstring response = Utf8ToWide(WideToAnsi(m_httpClient.getData(DEFAULT_IP, path.c_str(), params.c_str())));
-	response = CleanInvalidGBKChars(response);
+	response = CleanInvalidChars(response);
 	size_t pos = response.find(Str1);
 	if (pos != wstring::npos)response = response.substr(0, pos + 3) + Str3 + response.substr(pos + 4);
 	size_t pos2 = response.find(Str2);
