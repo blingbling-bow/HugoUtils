@@ -38,6 +38,7 @@
     <ClCompile Include="src\HugoUtils\HMount.cpp" />
     <ClCompile Include="src\HugoUtils\HPassword.cpp" />
     <ClCompile Include="src\HugoUtils\HFreezeDriver.cpp" />
+    <ClCompile Include="src\HugoUtils\HugoString.cpp" />
     <ClCompile Include="src\HugoUtils\HugoUtils.cpp" />
     <ClCompile Include="src\HugoUtils\HugoUtilsC.cpp" />
     <ClCompile Include="src\HugoUtils\HLock.cpp" />

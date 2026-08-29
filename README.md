@@ -1,5 +1,9 @@
 # HugoUtils
 
+> [!NOTE]
+>
+> 建议阅读 [HugoWidget 简介](https://github.com/HugoWidget/HugoWidget) 以了解开发情况
+
 ## 项目介绍
 
 HugoUtils 是 Hugo 系列工具的核心库，采用 C++ 编写，提供了一套完整的 Windows 系统功能封装，包括冰点还原管理、希沃管家控制、虚拟磁盘挂载、密码恢复等。  
@@ -59,10 +63,6 @@ if (api) {
 
 [hash-library](https://github.com/stbrumme/hash-library)(哈希库，已内置)
 
-## 免责声明
-
-本项目仅供研究和教育目的使用。用户不得将其用于违反当地法律法规、侵犯他人著作权或违反软件 EULA 的用途。任何非法使用所带来的后果由使用者自行承担，开发者不承担任何连带责任。
-
 ## 许可证
 
 本项目采用 LGPLv3 许可证，详情参见 [LICENSE](LICENSE) 与 [LICENSE.LESSER](LICENSE.LESSER) 文件。
@@ -80,3 +80,9 @@ mINI: [MIT 许可证](licenses/LICENSE-mINI)
 WinReg: [MIT 许可证](licenses/LICENSE-WinReg)
 
 libsharedmemory：[MIT 许可证](licenses/LICENSE-libsharedmemory)
+
+OpenSSL: [Apache-2.0 license](licenses/LICENSE-OpenSSL)
+
+## 免责声明
+
+本项目仅供研究和教育目的使用。用户不得将其用于违反当地法律法规、侵犯他人著作权或违反软件 EULA 的用途。任何非法使用所带来的后果由使用者自行承担，开发者不承担任何连带责任。

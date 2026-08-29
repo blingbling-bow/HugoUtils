@@ -159,10 +159,8 @@ FreezeResult HFreezeApi::SetFreezeState(
 
 	std::wstring response = Utf8ToWide(WideToAnsi(m_httpClient.getData(DEFAULT_IP, path.c_str(), params.c_str())));
 	response = CleanInvalidChars(response);
-	size_t pos = response.find(Str1);
-	if (pos != wstring::npos)response = response.substr(0, pos + 3) + Str3 + response.substr(pos + 4);
-	size_t pos2 = response.find(Str2);
-	if (pos2 != wstring::npos)response = response.substr(0, pos2 + 3) + Str3 + response.substr(pos2 + 4);
+	FixInvalidFreezeStrings(response);
+
 	logger.DLog(LogLevel::Debug, std::format(L"SetFreezeState response: {}", response));
 	return FreezeResult(response != L"" ? FrzOR::Success : FrzOR::Failed)
 		.setMsg(response);

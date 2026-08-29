@@ -127,6 +127,9 @@
     <ClCompile Include="src\HugoUtils\HFreezeDriver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\HugoUtils\HugoString.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\HugoUtils\BruteforceModel.h">
