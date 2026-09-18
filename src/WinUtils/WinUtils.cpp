@@ -24,6 +24,7 @@
 
 #include <ShlObj.h>
 #include <format>
+#include <fstream>
 #include <thread>
 #include <algorithm>
 #include <ranges>
@@ -276,6 +277,94 @@ namespace WinUtils {
 		string_t title(titleLen, TS('\0'));
 		TF(GetWindowText)(hWnd, title.data(), titleLen + 1);
 		return title;
+	}
+
+	bool CaptureWindowToBmp(HWND hwnd, const fs::path& filename)
+	{
+		RECT rect{};
+		if (!::GetWindowRect(hwnd, &rect)) return false;
+		int width = rect.right - rect.left;
+		int height = rect.bottom - rect.top;
+		if (width <= 0 || height <= 0) return false;
+
+		HDC hwndDc = GetWindowDC(hwnd);
+		if (!hwndDc) return false;
+
+		HDC memDc = CreateCompatibleDC(hwndDc);
+		HBITMAP hbmp = CreateCompatibleBitmap(hwndDc, width, height);
+		if (!memDc || !hbmp) {
+			if (hbmp) DeleteObject(hbmp);
+			if (memDc) DeleteDC(memDc);
+			ReleaseDC(hwnd, hwndDc);
+			return false;
+		}
+
+		HGDIOBJ oldObj = SelectObject(memDc, hbmp);
+
+		BOOL ok = PrintWindow(hwnd, memDc, PW_RENDERFULLCONTENT);
+		if (!ok) {
+			BitBlt(memDc, 0, 0, width, height, hwndDc, 0, 0, SRCCOPY);
+		}
+
+		BITMAPINFOHEADER bmi{};
+		bmi.biSize = sizeof(BITMAPINFOHEADER);
+		bmi.biWidth = width;
+		bmi.biHeight = -height;          // 从上到下
+		bmi.biPlanes = 1;
+		bmi.biBitCount = 32;
+		bmi.biCompression = BI_RGB;
+
+		int32_t imageSize = width * height * 4;
+		vector<uint8_t> buf((size_t)imageSize);
+
+		int got = GetDIBits(memDc, hbmp, 0, (UINT)height, buf.data(),
+			reinterpret_cast<BITMAPINFO*>(&bmi), DIB_RGB_COLORS);
+
+		SelectObject(memDc, oldObj);
+		DeleteObject(hbmp);
+		DeleteDC(memDc);
+		ReleaseDC(hwnd, hwndDc);
+
+		if (!got) return false;
+
+		// 手写 BMP 头
+		const int32_t pixelOffset = 14 + 40;
+		const int32_t fileSize = pixelOffset + imageSize;
+
+		uint8_t fileHeader[14] = {};
+		fileHeader[0] = 'B';
+		fileHeader[1] = 'M';
+		memcpy(&fileHeader[2], &fileSize, 4);
+		memcpy(&fileHeader[10], &pixelOffset, 4);
+
+		uint8_t infoHeader[40] = {};
+		int32_t biSize = 40;
+		int32_t biWidth = width;
+		int32_t biHeight = -height;
+		int16_t biPlanes = 1;
+		int16_t biBitCount = 32;
+		int32_t biCompression = 0;
+		int32_t biSizeImage = imageSize;
+		int32_t biPPM = 2835;
+		int32_t zero = 0;
+		memcpy(&infoHeader[0], &biSize, 4);
+		memcpy(&infoHeader[4], &biWidth, 4);
+		memcpy(&infoHeader[8], &biHeight, 4);
+		memcpy(&infoHeader[12], &biPlanes, 2);
+		memcpy(&infoHeader[14], &biBitCount, 2);
+		memcpy(&infoHeader[16], &biCompression, 4);
+		memcpy(&infoHeader[20], &biSizeImage, 4);
+		memcpy(&infoHeader[24], &biPPM, 4);
+		memcpy(&infoHeader[28], &biPPM, 4);
+		memcpy(&infoHeader[32], &zero, 4);
+		memcpy(&infoHeader[36], &zero, 4);
+
+		ofstream f(filename, ios::binary);
+		if (!f) return false;
+		f.write(reinterpret_cast<const char*>(fileHeader), 14);
+		f.write(reinterpret_cast<const char*>(infoHeader), 40);
+		f.write(reinterpret_cast<const char*>(buf.data()), imageSize);
+		return f.good();
 	}
 
 	bool IsCurrentProcessAdmin() {

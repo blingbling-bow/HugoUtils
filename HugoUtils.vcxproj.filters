@@ -130,6 +130,9 @@
     <ClCompile Include="src\HugoUtils\HugoString.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\WinUtils\UIAccess.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\HugoUtils\BruteforceModel.h">
@@ -255,5 +258,6 @@
     <ClInclude Include="include\HugoUtils\HFreezeFile_p.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\WinUtils\UIAccess.h" />
   </ItemGroup>
 </Project>

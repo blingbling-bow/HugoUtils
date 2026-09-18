@@ -68,6 +68,7 @@ namespace WinUtils {
 	WUAPI RECT GetWindowRect(HWND hWnd);
 	WUAPI bool GetWindowTitle(HWND hWnd, char_t* outTitle, int maxLength);
 	WUAPI string_t GetWindowTitleString(HWND hWnd);
+	WUAPI bool CaptureWindowToBmp(HWND hwnd, const std::filesystem::path& filename);
 
 	// Privilege & Instance Management
 	WUAPI bool IsCurrentProcessAdmin();
