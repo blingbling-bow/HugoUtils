@@ -401,7 +401,7 @@ namespace WinUtils {
 		if (title.empty()) title = TS("Prompt - ") + name;
 		if (content.empty()) content = TS("The program is already running!\nClick OK to close the existing instance, click Cancel to exit this run.");
 
-		string_t input = TS("WinUtils_SingleInstance_") + (exclusive ? GetCurrentProcessPath() : name) + extraInfo;
+		string_t input = TS("WinUtils_SingleInstance_") + (exclusive ? name : GetCurrentProcessPath()) + extraInfo;
 		size_t hash = std::hash<string_t>{}(input);
 		string_t mutexName = TS("Global\\") + ConvertString(std::to_string(hash));
 
